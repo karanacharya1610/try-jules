@@ -18,6 +18,15 @@ router = APIRouter()
 
 @router.post("/auth/signup")
 async def signup_handler(name: str = Form(), email: str = Form(), organization: str = Form(default=None), db_session: AsyncSession = Depends(get_db)):
+    if not name.strip():
+        raise HTTPException(status_code=422, detail="Name cannot be empty.")
+    if len(name) > 255:
+        raise HTTPException(status_code=422, detail="Name is too long (maximum 255 characters).")
+    if organization is not None:
+        if not organization.strip():
+            raise HTTPException(status_code=422, detail="Organization cannot be empty if provided.")
+        if len(organization) > 255:
+            raise HTTPException(status_code=422, detail="Organization name is too long (maximum 255 characters).")
     email = email.lower()
     if not await is_valid_email(email):
         logger.warning("Invalid email provided.", extra={"email": email})
@@ -42,6 +51,15 @@ async def signup_handler(name: str = Form(), email: str = Form(), organization: 
 async def signup_validate_handler(
     response: Response, name: str = Form(), email: str = Form(), organization: str = Form(default=None), code: str = Form(), db_session: AsyncSession = Depends(get_db)
 ):
+    if not name.strip():
+        raise HTTPException(status_code=422, detail="Name cannot be empty.")
+    if len(name) > 255:
+        raise HTTPException(status_code=422, detail="Name is too long (maximum 255 characters).")
+    if organization is not None:
+        if not organization.strip():
+            raise HTTPException(status_code=422, detail="Organization cannot be empty if provided.")
+        if len(organization) > 255:
+            raise HTTPException(status_code=422, detail="Organization name is too long (maximum 255 characters).")
     email = email.lower()
     if not await is_valid_email(email):
         logger.warning("Invalid email provided.", extra={"email": email})
